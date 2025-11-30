@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - Bibliosfera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 400px;
+            margin-top: 100px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        .logo-text {
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="login-container">
+            <h2 class="text-center mb-4 logo-text">
+                <i class="bi bi-book-fill"></i> Bibliosfera
+            </h2>
+            <p class="text-center text-secondary mb-4">Inicia sesión en tu cuenta</p>
+
+            <form th:action="@{/login}" method="post">
+                
+                <div th:if="${param.error}" class="alert alert-danger text-center">
+                    Nombre de usuario o contraseña inválidos.
+                </div>
+
+                <div th:if="${param.logout}" class="alert alert-success text-center">
+                    Sesión cerrada exitosamente.
+                </div>
+                
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nombre de Usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" id="username" name="username" class="form-control" required autofocus>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </button>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <p>¿Aún no tienes cuenta? <a th:href="@{/registro}">Regístrate aquí</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

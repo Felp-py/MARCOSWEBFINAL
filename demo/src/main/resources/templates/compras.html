@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Compras - Bibliosfera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .checkout-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <header class="bg-light py-4 mb-4 rounded shadow-sm">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-12 text-center text-lg-start mb-3 mb-lg-0">
+                    <h2 class="text-primary fw-bold"><i class="bi bi-cart4"></i> Carrito de Compras</h2>
+                    <h5 class="text-secondary">"Llévate contigo las historias que inspiran."</h5>
+                </div>
+                <div class="col-lg-6 col-12 text-center">
+                    <img th:src="@{/img/lib5.jpg}" class="img-fluid rounded shadow" alt="Imagen de librería" style="max-height: 200px; object-fit: cover;">
+                </div>
+            </div>
+        </header>
+
+        <div th:if="${carrito == null or carrito.empty}" class="alert alert-warning text-center">
+            <i class="bi bi-info-circle"></i> El carrito está vacío. ¡Explora el <a th:href="@{/catalogo}" class="alert-link">catálogo</a> para empezar a comprar!
+        </div>
+        
+        <div th:unless="${carrito == null or carrito.empty}" class="row">
+            <div class="col-lg-8">
+                <h3 class="mb-3"><i class="bi bi-bag"></i> Artículos</h3>
+                <table class="table table-striped text-center align-middle shadow-sm">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Libro</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${carrito}">
+                            <td th:text="${item.nombre}">Nombre</td>
+                            <td th:text="'S/ ' + ${#numbers.formatDecimal(item.precio, 1, 'COMMA', 2, 'POINT')}">Precio</td>
+                            <td th:text="${item.cantidad}">Cantidad</td>
+                            <td th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 'COMMA', 2, 'POINT')}">Subtotal</td>
+                            <td>
+                                <a th:href="@{/carrito/eliminar/{id}(id=${item.idLibro})}" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="checkout-box">
+                    <h4 class="text-success text-center mb-4">Resumen</h4>
+                    
+                    <div class="d-flex justify-content-between fs-5 mb-4 border-top pt-3">
+                        <span class="fw-bold">TOTAL:</span>
+                        <span class="text-primary fw-bolder" 
+                              th:text="'S/ ' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">S/ 0.00</span>
+                    </div>
+
+                    <a th:href="@{/compras/checkout}" class="btn btn-success btn-lg w-100 mb-3">
+                        <i class="bi bi-check-circle-fill"></i> Proceder al Pago
+                    </a>
+                    
+                    <a th:href="@{/catalogo}" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-left"></i> Seguir Comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <h5 class="text-center">Libros por Cantidad</h5>
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-center">Distribución del Carrito</h5>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <h5 class="text-center">Precios de los Libros</h5>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:inline="javascript">
+        let libros = /*[[${carrito}]]*/ [];
+
+        let nombres = libros.map(l => l.nombre);
+        let cantidades = libros.map(l => l.cantidad);
+        let precios = libros.map(l => l.precio);
+        let subtotales = libros.map(l => l.subtotal);
+
+        new Chart(document.getElementById("barChart"), {
+            type: 'bar',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    label: "Cantidad",
+                    data: cantidades,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                }]
+            }
+        });
+
+        new Chart(document.getElementById("pieChart"), {
+            type: 'doughnut',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    label: "Subtotal",
+                    data: subtotales,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ]
+                }]
+            }
+        });
+
+        new Chart(document.getElementById("lineChart"), {
+            type: 'line',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    label: "Precio por Libro",
+                    data: precios,
+                    borderColor: 'rgba(255, 99, 132, 0.9)',
+                    fill: false,
+                    tension: 0.3
+                }]
+            }
+        });
+    </script>
+</body>
+</html>
