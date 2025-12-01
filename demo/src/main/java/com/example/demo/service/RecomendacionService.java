@@ -10,6 +10,5 @@ public interface RecomendacionService {
     Recomendacion save(Recomendacion recomendacion);
     void deleteById(Integer id);
 
-    // Métodos extra si quieres
     List<Recomendacion> findByClienteContaining(String cliente);
 }
