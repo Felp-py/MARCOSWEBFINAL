@@ -8,10 +8,10 @@ import java.util.List;
 @Table(name = "cliente")
 public class Cliente {
 
-    @Id
+     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cliente")
-    private Integer idCliente;
+    private Long idCliente;
 
     @Column(name = "nombre_cliente", nullable = false, length = 100)
     private String nombreCliente;
@@ -39,8 +39,8 @@ public class Cliente {
 
     // GETTERS Y SETTERS
 
-    public Integer getIdCliente() { return idCliente; }
-    public void setIdCliente(Integer idCliente) { this.idCliente = idCliente; }
+  public Long getIdCliente() { return idCliente; }
+    public void setIdCliente(Long idCliente) { this.idCliente = idCliente; }    
 
     public String getNombreCliente() { return nombreCliente; }
     public void setNombreCliente(String nombreCliente) { this.nombreCliente = nombreCliente; }
