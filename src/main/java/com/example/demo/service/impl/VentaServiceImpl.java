@@ -31,7 +31,7 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public Optional<Venta> findById(Integer id) {
+    public Optional<Venta> findById(Long id) {       // ← Cambiado a Long
         return ventaRepository.findById(id);
     }
 
@@ -41,14 +41,17 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {                 // ← Cambiado a Long
         ventaRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public Venta procesarCompra(List<ItemCarrito> carrito, Cliente cliente, MetodoPago metodoPago,
-                                TipoEntrega tipoEntrega, BigDecimal totalCalculado) {
+    public Venta procesarCompra(List<ItemCarrito> carrito,
+                                Cliente cliente,
+                                MetodoPago metodoPago,
+                                TipoEntrega tipoEntrega,
+                                BigDecimal totalCalculado) {
 
         Venta nuevaVenta = new Venta();
         nuevaVenta.setCliente(cliente);
@@ -60,10 +63,11 @@ public class VentaServiceImpl implements VentaService {
 
         for (ItemCarrito item : carrito) {
 
-            Libro libro = libroRepository.findById(item.getIdLibro().intValue())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Error fatal: Libro no encontrado con ID: " + item.getIdLibro()
-                    ));
+            // CORREGIDO: usar Long
+            Libro libro = libroRepository.findById(item.getIdLibro())
+                    .orElseThrow(() ->
+                            new RuntimeException("Libro no encontrado con ID: " + item.getIdLibro())
+                    );
 
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVenta(ventaGuardada);

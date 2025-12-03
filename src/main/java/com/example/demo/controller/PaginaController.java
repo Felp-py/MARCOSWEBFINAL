@@ -34,12 +34,23 @@ public class PaginaController {
     }
 
     @GetMapping("/catalogo")
-    public String verCatalogo(Model model) {
-        // Trae solo libros con stock disponible
-        List<Libro> libros = libroRepository.findByStockGreaterThan(0);
-        model.addAttribute("libros", libros);
-        return "catalogo"; // apunta a catalogo.html
+public String verCatalogo(Model model) {
+    List<Libro> libros = libroRepository.findAll();
+    
+    // Debug: Imprimir información
+    System.out.println("=== DEBUG CATÁLOGO ===");
+    System.out.println("Total libros: " + libros.size());
+    
+    for(int i = 0; i < Math.min(3, libros.size()); i++) {
+        Libro libro = libros.get(i);
+        System.out.println("Libro " + i + ": " + libro.getTitulo());
+        System.out.println("  Autor: " + (libro.getAutor() != null ? libro.getAutor().getNombre() : "NULL"));
+        System.out.println("  Imagen URL: " + libro.getImagenUrl());
     }
+    
+    model.addAttribute("libros", libros);
+    return "catalogo";
+}
 
     @GetMapping("/compras")
     public String compras(Model model) {

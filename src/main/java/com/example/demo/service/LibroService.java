@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface LibroService {
     List<Libro> findAll();
-    Optional<Libro> findById(Integer id);
+    Optional<Libro> findById(Long id);
+    void deleteById(Long id);
     Libro save(Libro libro);
-    void deleteById(Integer id);
 }

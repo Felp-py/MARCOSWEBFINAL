@@ -38,7 +38,7 @@ public class CarritoController {
     }
 
     @PostMapping("/agregar")
-    public String agregarAlCarrito(@RequestParam Integer idLibro,
+    public String agregarAlCarrito(@RequestParam Long idLibro,
                                    @RequestParam(defaultValue = "1") int cantidad,
                                    @ModelAttribute("carrito") List<ItemCarrito> carrito) {
 

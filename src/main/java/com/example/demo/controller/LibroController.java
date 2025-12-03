@@ -83,7 +83,7 @@ public class LibroController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String eliminarLibro(@PathVariable Integer id) {
+    public String eliminarLibro(@PathVariable Long id) {
         libroRepository.deleteById(id);
         return "redirect:/libros/lista";
     }

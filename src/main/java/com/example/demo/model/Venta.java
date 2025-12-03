@@ -12,7 +12,7 @@ public class Venta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_venta")
-    private Integer idVenta;
+    private Long idVenta;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente", nullable = false)
@@ -39,24 +39,59 @@ public class Venta {
         this.fechaVenta = LocalDateTime.now();
     }
 
-    public Integer getIdVenta() { return idVenta; }
-    public void setIdVenta(Integer idVenta) { this.idVenta = idVenta; }
+    public Long getIdVenta() { 
+        return idVenta; 
+    }
 
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public void setIdVenta(Long idVenta) { 
+        this.idVenta = idVenta; 
+    }
 
-    public LocalDateTime getFechaVenta() { return fechaVenta; }
-    public void setFechaVenta(LocalDateTime fechaVenta) { this.fechaVenta = fechaVenta; }
+    public Cliente getCliente() { 
+        return cliente; 
+    }
 
-    public BigDecimal getTotal() { return total; }
-    public void setTotal(BigDecimal total) { this.total = total; }
+    public void setCliente(Cliente cliente) { 
+        this.cliente = cliente; 
+    }
 
-    public MetodoPago getMetodoPago() { return metodoPago; }
-    public void setMetodoPago(MetodoPago metodoPago) { this.metodoPago = metodoPago; }
+    public LocalDateTime getFechaVenta() { 
+        return fechaVenta; 
+    }
 
-    public TipoEntrega getTipoEntrega() { return tipoEntrega; }
-    public void setTipoEntrega(TipoEntrega tipoEntrega) { this.tipoEntrega = tipoEntrega; }
+    public void setFechaVenta(LocalDateTime fechaVenta) { 
+        this.fechaVenta = fechaVenta; 
+    }
 
-    public List<DetalleVenta> getDetalles() { return detalles; }
-    public void setDetalles(List<DetalleVenta> detalles) { this.detalles = detalles; }
+    public BigDecimal getTotal() { 
+        return total; 
+    }
+
+    public void setTotal(BigDecimal total) { 
+        this.total = total; 
+    }
+
+    public MetodoPago getMetodoPago() { 
+        return metodoPago; 
+    }
+
+    public void setMetodoPago(MetodoPago metodoPago) { 
+        this.metodoPago = metodoPago; 
+    }
+
+    public TipoEntrega getTipoEntrega() { 
+        return tipoEntrega; 
+    }
+
+    public void setTipoEntrega(TipoEntrega tipoEntrega) { 
+        this.tipoEntrega = tipoEntrega; 
+    }
+
+    public List<DetalleVenta> getDetalles() { 
+        return detalles; 
+    }
+
+    public void setDetalles(List<DetalleVenta> detalles) { 
+        this.detalles = detalles; 
+    }
 }
