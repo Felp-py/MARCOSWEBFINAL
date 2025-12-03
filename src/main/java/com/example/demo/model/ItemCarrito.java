@@ -2,9 +2,13 @@ package com.example.demo.model;
 
 import java.math.BigDecimal; 
 import java.util.Objects; 
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "item_carrito")
 public class ItemCarrito {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLibro;
     private String nombre;
     private BigDecimal precio;
