@@ -1,10 +1,38 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DniResponse {
+    
+    @JsonProperty("success")
+    private Boolean success;
+    
+    @JsonProperty("dni")
     private String dni;
-    private String nombre;
+    
+    @JsonProperty("nombres")
+    private String nombres;
+    
+    @JsonProperty("apellidoPaterno")
     private String apellidoPaterno;
+    
+    @JsonProperty("apellidoMaterno")
     private String apellidoMaterno;
+    
+    @JsonProperty("codVerifica")
+    private Integer codVerifica;
+    
+    @JsonProperty("codVerificaLetra")
+    private String codVerificaLetra;
+
+    // Getters y Setters para todos los campos
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
 
     public String getDni() {
         return dni;
@@ -14,12 +42,12 @@ public class DniResponse {
         this.dni = dni;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombres() {
+        return nombres;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
     }
 
     public String getApellidoPaterno() {
@@ -36,5 +64,21 @@ public class DniResponse {
 
     public void setApellidoMaterno(String apellidoMaterno) {
         this.apellidoMaterno = apellidoMaterno;
+    }
+
+    public Integer getCodVerifica() {
+        return codVerifica;
+    }
+
+    public void setCodVerifica(Integer codVerifica) {
+        this.codVerifica = codVerifica;
+    }
+
+    public String getCodVerificaLetra() {
+        return codVerificaLetra;
+    }
+
+    public void setCodVerificaLetra(String codVerificaLetra) {
+        this.codVerificaLetra = codVerificaLetra;
     }
 }

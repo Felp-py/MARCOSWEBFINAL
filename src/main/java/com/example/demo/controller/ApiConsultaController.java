@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/consulta")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*")
 public class ApiConsultaController {
 
     @Autowired
@@ -15,6 +15,9 @@ public class ApiConsultaController {
 
     @GetMapping("/dni/{dni}")
     public DniResponse buscarDni(@PathVariable String dni) {
-        return dniService.consultarDni(dni);
+        System.out.println("📥 Solicitando DNI: " + dni);
+        DniResponse respuesta = dniService.consultarDni(dni);
+        System.out.println("📤 Enviando respuesta: " + (respuesta != null ? respuesta.getNombres() : "null"));
+        return respuesta;
     }
 }
