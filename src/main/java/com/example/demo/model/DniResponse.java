@@ -23,6 +23,19 @@ public class DniResponse {
     @JsonProperty("numeroDocumento")
     private String numeroDocumento;
     
-    // Constructor necesario
+    // Constructor vacío necesario para Jackson
     public DniResponse() {}
+    
+    // Getters (Lombok los genera con @Data, pero por si acaso)
+    public String getNombres() {
+        return nombres;
+    }
+    
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
+    }
+    
+    public String getApellidoMaterno() {
+        return apellidoMaterno;
+    }
 }
