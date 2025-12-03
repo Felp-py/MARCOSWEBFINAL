@@ -40,20 +40,37 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 // Acceso público para todas las rutas estáticas y páginas de visualización
-                .requestMatchers("/", "/inicio", "/catalogo", "/nosotros","/registro", "/img/**", "/css/**", "/js/**").permitAll() 
+                .requestMatchers(
+                    "/", 
+                    "/inicio", 
+                    "/catalogo", 
+                    "/nosotros",
+                    "/registro", 
+                    "/img/**", 
+                    "/css/**", 
+                    "/js/**",
+                    "/dni/**",           // ← AGREGAR ESTA LÍNEA
+                    "/login"             // ← AGREGAR ESTA TAMBIÉN
+                ).permitAll() 
+                
                 // La lista de libros es solo para administradores
                 .requestMatchers("/libros/lista", "/libros/nuevo").hasRole("ADMIN") 
+                
                 // Todas las demás rutas requieren autenticación
                 .anyRequest().authenticated() 
             )
             .formLogin(form -> form
-                .loginPage("/login") // Si no tienes un controller para /login, Spring lo hace por ti
+                .loginPage("/login") 
                 .defaultSuccessUrl("/inicio", true) // Redirección después del éxito
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/inicio")
                 .permitAll()
+            )
+            .csrf(csrf -> csrf
+                // Opcional: deshabilitar CSRF para APIs si quieres probar desde Postman
+                .ignoringRequestMatchers("/dni/api/**") // Para tu endpoint API
             );
         return http.build();
     }
