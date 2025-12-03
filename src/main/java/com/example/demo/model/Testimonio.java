@@ -1,6 +1,11 @@
 package com.example.demo.model;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "testimonio")
 public class Testimonio {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String cliente;
     private String comentario;
