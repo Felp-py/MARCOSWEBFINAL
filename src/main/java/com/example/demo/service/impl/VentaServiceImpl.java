@@ -31,7 +31,7 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public Optional<Venta> findById(Long id) {       // ← Cambiado a Long
+    public Optional<Venta> findById(Integer id) {
         return ventaRepository.findById(id);
     }
 
@@ -41,7 +41,7 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public void deleteById(Long id) {                 // ← Cambiado a Long
+    public void deleteById(Integer id) {
         ventaRepository.deleteById(id);
     }
 
@@ -62,8 +62,7 @@ public class VentaServiceImpl implements VentaService {
         Venta ventaGuardada = ventaRepository.save(nuevaVenta);
 
         for (ItemCarrito item : carrito) {
-
-            // CORREGIDO: usar Long
+            // Esto ya debería funcionar si libroRepository usa Integer
             Libro libro = libroRepository.findById(item.getIdLibro())
                     .orElseThrow(() ->
                             new RuntimeException("Libro no encontrado con ID: " + item.getIdLibro())

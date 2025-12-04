@@ -5,130 +5,69 @@
     <title>Iniciar Sesión - Bibliosfera</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 50px;
-        }
-        .login-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background-color: white;
-        }
-        .logo-text {
-            color: #007bff;
-            font-weight: bold;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875em;
-            margin-top: 5px;
-        }
-    </style>
 </head>
 <body>
 
-<div class="container">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="login-container">
-                <h2 class="text-center mb-4 logo-text">
-                    <i class="bi bi-book-fill"></i> Bibliosfera
-                </h2>
-                <p class="text-center text-secondary mb-4">Inicia sesión en tu cuenta</p>
-
-                <!-- Mensajes de error/success -->
-                <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show">
-                    <strong>Error:</strong> Nombre de usuario o contraseña incorrectos.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="bi bi-person-circle"></i> Iniciar Sesión</h4>
                 </div>
-                
-                <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show">
-                    <strong>Éxito:</strong> Has cerrado sesión correctamente.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="card-body">
+                    <!-- Asegúrate que el action sea @{/login} -->
+                    <form th:action="@{/login}" method="post">
+                        
+                        <!-- Mostrar mensaje de error si existe -->
+                        <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i> 
+                            Usuario o contraseña incorrectos
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <!-- Mostrar mensaje de logout si existe -->
+                        <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i> 
+                            Has cerrado sesión exitosamente
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Usuario:</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="Ingresa tu usuario" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña:</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Ingresa tu contraseña" required>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="mb-0">¿No tienes una cuenta?</p>
+                            <a th:href="@{/registro}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-person-plus"></i> Crear cuenta
+                            </a>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Formulario de login -->
-                <form th:action="@{/login}" method="post">
-                    <!-- TOKEN CSRF IMPORTANTE -->
-                
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">
-                            <i class="bi bi-person"></i> Nombre de Usuario
-                        </label>
-                        <input type="text" 
-                               id="username" 
-                               name="username" 
-                               class="form-control" 
-                               placeholder="Ingresa tu usuario"
-                               required 
-                               autofocus>
-                        <div class="error-message" id="username-error"></div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="password" class="form-label">
-                            <i class="bi bi-lock"></i> Contraseña
-                        </label>
-                        <input type="password" 
-                               id="password" 
-                               name="password" 
-                               class="form-control" 
-                               placeholder="Ingresa tu contraseña"
-                               required>
-                        <div class="error-message" id="password-error"></div>
-                    </div>
-
-                    <div class="d-grid gap-2 mb-3">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
-                        </button>
-                    </div>
-                    
-                    <div class="text-center mt-3">
-                        <p class="mb-2">¿Aún no tienes cuenta?</p>
-                        <a th:href="@{/registro}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-person-plus"></i> Crear cuenta nueva
-                        </a>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 </div>
 
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Validación básica del lado del cliente
-    document.querySelector('form').addEventListener('submit', function(e) {
-        let isValid = true;
-        
-        const username = document.getElementById('username');
-        const password = document.getElementById('password');
-        
-        // Limpiar errores previos
-        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-        
-        // Validar username
-        if (!username.value.trim()) {
-            document.getElementById('username-error').textContent = 'El nombre de usuario es requerido';
-            isValid = false;
-        }
-        
-        // Validar password
-        if (!password.value.trim()) {
-            document.getElementById('password-error').textContent = 'La contraseña es requerida';
-            isValid = false;
-        }
-        
-        if (!isValid) {
-            e.preventDefault();
-        }
-    });
-</script>
 </body>
 </html>

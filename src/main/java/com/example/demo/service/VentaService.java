@@ -6,20 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VentaService {
-
     List<Venta> findAll();
-
-    Optional<Venta> findById(Long id);   // ← CORREGIDO
-
+    Optional<Venta> findById(Integer id);  // Cambiado a Integer
     Venta save(Venta venta);
-
-    void deleteById(Long id);            // ← CORREGIDO
-
-    Venta procesarCompra(
-            List<ItemCarrito> carrito,
-            Cliente cliente,
-            MetodoPago metodoPago,
-            TipoEntrega tipoEntrega,
-            BigDecimal totalCalculado
-    );
+    void deleteById(Integer id);  // Cambiado a Integer
+    
+    Venta procesarCompra(List<ItemCarrito> carrito,
+                        Cliente cliente,
+                        MetodoPago metodoPago,
+                        TipoEntrega tipoEntrega,
+                        BigDecimal totalCalculado);
 }

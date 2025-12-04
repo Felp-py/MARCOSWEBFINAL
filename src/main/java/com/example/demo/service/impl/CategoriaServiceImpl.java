@@ -21,7 +21,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public Optional<Categoria> findById(Integer id) {
+    public Optional<Categoria> findById(Integer id) { // Mantener como Integer
         return categoriaRepository.findById(id);
     }
 
@@ -31,7 +31,13 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Integer id) { // Mantener como Integer
         categoriaRepository.deleteById(id);
+    }
+    
+    // Método adicional para buscar por nombre
+    @Override
+    public Optional<Categoria> findByNombre(String nombre) {
+        return categoriaRepository.findByNombre(nombre);
     }
 }

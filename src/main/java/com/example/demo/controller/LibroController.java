@@ -1,90 +1,179 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Autor;
-import com.example.demo.model.Categoria;
-import com.example.demo.model.Editorial;
-import com.example.demo.model.Libro;
-import com.example.demo.repository.AutorRepository;
-import com.example.demo.repository.CategoriaRepository;
-import com.example.demo.repository.EditorialRepository;
+import com.example.demo.model.*;
+import com.example.demo.service.*;
 import com.example.demo.repository.LibroRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/libros")
 public class LibroController {
 
     private final LibroRepository libroRepository;
-    private final AutorRepository autorRepository;
-    private final CategoriaRepository categoriaRepository;
-    private final EditorialRepository editorialRepository;
+    private final AutorService autorService;
+    private final CategoriaService categoriaService;
+    private final EditorialService editorialService;
 
-    public LibroController(
-            LibroRepository libroRepository,
-            AutorRepository autorRepository,
-            CategoriaRepository categoriaRepository,
-            EditorialRepository editorialRepository
-    ) {
+    public LibroController(LibroRepository libroRepository,
+                          AutorService autorService,
+                          CategoriaService categoriaService,
+                          EditorialService editorialService) {
         this.libroRepository = libroRepository;
-        this.autorRepository = autorRepository;
-        this.categoriaRepository = categoriaRepository;
-        this.editorialRepository = editorialRepository;
+        this.autorService = autorService;
+        this.categoriaService = categoriaService;
+        this.editorialService = editorialService;
     }
 
+    // Mostrar formulario para nuevo libro (solo admin)
     @GetMapping("/nuevo")
-    public String nuevoLibroForm(Model model) {
-        model.addAttribute("autores", autorRepository.findAll());
-        model.addAttribute("categorias", categoriaRepository.findAll());
-        model.addAttribute("editoriales", editorialRepository.findAll());
+    public String mostrarFormularioNuevoLibro() {
         return "nuevo-libro";
     }
 
+    // Guardar nuevo libro
     @PostMapping("/guardar")
+    @Transactional
     public String guardarLibro(
             @RequestParam String titulo,
-            @RequestParam Integer idAutor,
-            @RequestParam Integer idCategoria,
-            @RequestParam Integer idEditorial,
+            @RequestParam String autor,
+            @RequestParam String categoria,
+            @RequestParam String editorial,
             @RequestParam BigDecimal precio,
-            @RequestParam Integer stock,
-            @RequestParam String descripcion,
-            @RequestParam(required = false) String fechaPublicacion
-    ) {
-        Autor autor = autorRepository.findById(idAutor).orElseThrow();
-        Categoria categoria = categoriaRepository.findById(idCategoria).orElseThrow();
-        Editorial editorial = editorialRepository.findById(idEditorial).orElseThrow();
-
-        Libro nuevo = new Libro();
-        nuevo.setTitulo(titulo);
-        nuevo.setAutor(autor);
-        nuevo.setCategoria(categoria);
-        nuevo.setEditorial(editorial);
-        nuevo.setPrecio(precio);
-        nuevo.setStock(stock);
-        nuevo.setDescripcion(descripcion);
-
-        if (fechaPublicacion != null && !fechaPublicacion.isEmpty()) {
-            nuevo.setFechaPublicacion(LocalDate.parse(fechaPublicacion));
+            @RequestParam Integer stock) {
+        
+        try {
+            // Buscar o crear autor
+            Autor autorObj = autorService.findByNombre(autor)
+                    .orElseGet(() -> {
+                        Autor nuevoAutor = new Autor();
+                        nuevoAutor.setNombre(autor);
+                        return autorService.save(nuevoAutor);
+                    });
+            
+            // Buscar o crear categoría
+            Categoria categoriaObj = categoriaService.findByNombre(categoria)
+                    .orElseGet(() -> {
+                        Categoria nuevaCategoria = new Categoria();
+                        nuevaCategoria.setNombre(categoria);
+                        return categoriaService.save(nuevaCategoria);
+                    });
+            
+            // Buscar o crear editorial
+            Editorial editorialObj = editorialService.findByNombre(editorial)
+                    .orElseGet(() -> {
+                        Editorial nuevaEditorial = new Editorial();
+                        nuevaEditorial.setNombre(editorial);
+                        return editorialService.save(nuevaEditorial);
+                    });
+            
+            // Crear y guardar libro
+            Libro libro = new Libro();
+            libro.setTitulo(titulo);
+            libro.setAutor(autorObj);
+            libro.setCategoria(categoriaObj);
+            libro.setEditorial(editorialObj);
+            libro.setPrecio(precio);
+            libro.setStock(stock != null ? stock : 0);
+            
+            libroRepository.save(libro);
+            
+            return "redirect:/admin/lista-libros?success=true";
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/libros/nuevo?error=true";
         }
-
-        libroRepository.save(nuevo);
-        return "redirect:/libros/lista";
     }
 
-    @GetMapping("/lista")
-    public String listarLibros(Model model) {
-        model.addAttribute("libros", libroRepository.findAll());
-        return "lista-libros";
+    // Mostrar formulario para editar libro
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditarLibro(@PathVariable Long id, Model model) { // Cambiado a Long
+        Optional<Libro> libroOpt = libroRepository.findById(id);
+        
+        if (libroOpt.isPresent()) {
+            model.addAttribute("libro", libroOpt.get());
+            return "editar-libro";
+        }
+        
+        return "redirect:/admin/lista-libros?error=notfound";
     }
 
+    // Actualizar libro
+    @PostMapping("/actualizar/{id}")
+    @Transactional
+    public String actualizarLibro(
+            @PathVariable Long id, // Cambiado a Long
+            @RequestParam String titulo,
+            @RequestParam String autor,
+            @RequestParam String categoria,
+            @RequestParam String editorial,
+            @RequestParam BigDecimal precio,
+            @RequestParam Integer stock) {
+        
+        Optional<Libro> libroOpt = libroRepository.findById(id);
+        
+        if (libroOpt.isPresent()) {
+            Libro libro = libroOpt.get();
+            
+            // Actualizar campos básicos
+            libro.setTitulo(titulo);
+            libro.setPrecio(precio);
+            libro.setStock(stock != null ? stock : 0);
+            
+            // Actualizar o crear autor
+            Autor autorObj = autorService.findByNombre(autor)
+                    .orElseGet(() -> {
+                        Autor nuevoAutor = new Autor();
+                        nuevoAutor.setNombre(autor);
+                        return autorService.save(nuevoAutor);
+                    });
+            libro.setAutor(autorObj);
+            
+            // Actualizar o crear categoría
+            Categoria categoriaObj = categoriaService.findByNombre(categoria)
+                    .orElseGet(() -> {
+                        Categoria nuevaCategoria = new Categoria();
+                        nuevaCategoria.setNombre(categoria);
+                        return categoriaService.save(nuevaCategoria);
+                    });
+            libro.setCategoria(categoriaObj);
+            
+            // Actualizar o crear editorial
+            Editorial editorialObj = editorialService.findByNombre(editorial)
+                    .orElseGet(() -> {
+                        Editorial nuevaEditorial = new Editorial();
+                        nuevaEditorial.setNombre(editorial);
+                        return editorialService.save(nuevaEditorial);
+                    });
+            libro.setEditorial(editorialObj);
+            
+            libroRepository.save(libro);
+            
+            return "redirect:/admin/lista-libros?success=updated";
+        }
+        
+        return "redirect:/admin/lista-libros?error=notfound";
+    }
+
+    // Eliminar libro
     @GetMapping("/eliminar/{id}")
-    public String eliminarLibro(@PathVariable Long id) {
+    public String eliminarLibro(@PathVariable Long id) { // Cambiado a Long
         libroRepository.deleteById(id);
-        return "redirect:/libros/lista";
+        return "redirect:/admin/lista-libros?success=deleted";
+    }
+
+    // Lista simple de libros (alternativa)
+    @GetMapping("/lista")
+    public String listaLibros(Model model) {
+        List<Libro> libros = libroRepository.findAll();
+        model.addAttribute("libros", libros);
+        return "lista-simple-libros";
     }
 }
