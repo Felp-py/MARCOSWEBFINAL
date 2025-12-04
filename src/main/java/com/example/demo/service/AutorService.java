@@ -6,7 +6,8 @@ import java.util.Optional;
 
 public interface AutorService {
     List<Autor> findAll();
-    Optional<Autor> findById(Integer id);
+    Optional<Autor> findById(Integer id); // Mantener como Integer
     Autor save(Autor autor);
-    void deleteById(Integer id);
+    void deleteById(Integer id); // Mantener como Integer
+    Optional<Autor> findByNombre(String nombre); // Añadir este método
 }

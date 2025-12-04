@@ -28,33 +28,27 @@ public class PaginaController {
         return "nosotros";
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
 
     @GetMapping("/catalogo")
-public String verCatalogo(Model model) {
-    List<Libro> libros = libroRepository.findAll();
-    
-    // Debug: Imprimir información
-    System.out.println("=== DEBUG CATÁLOGO ===");
-    System.out.println("Total libros: " + libros.size());
-    
-    for(int i = 0; i < Math.min(3, libros.size()); i++) {
-        Libro libro = libros.get(i);
-        System.out.println("Libro " + i + ": " + libro.getTitulo());
-        System.out.println("  Autor: " + (libro.getAutor() != null ? libro.getAutor().getNombre() : "NULL"));
-        System.out.println("  Imagen URL: " + libro.getImagenUrl());
+    public String verCatalogo(Model model) {
+        List<Libro> libros = libroRepository.findAll();
+
+        System.out.println("=== DEBUG CATÁLOGO ===");
+        System.out.println("Total libros: " + libros.size());
+
+        for(int i = 0; i < Math.min(3, libros.size()); i++) {
+            Libro libro = libros.get(i);
+            System.out.println("Libro " + i + ": " + libro.getTitulo());
+            System.out.println("  Autor: " + (libro.getAutor() != null ? libro.getAutor().getNombre() : "NULL"));
+            System.out.println("  Imagen URL: " + libro.getImagenUrl());
+        }
+
+        model.addAttribute("libros", libros);
+        return "catalogo";
     }
-    
-    model.addAttribute("libros", libros);
-    return "catalogo";
-}
 
     @GetMapping("/compras")
     public String compras(Model model) {
-        // Inicializa carrito vacío
         model.addAttribute("carrito", new ArrayList<Libro>());
         model.addAttribute("total", 0.0);
         return "compras";

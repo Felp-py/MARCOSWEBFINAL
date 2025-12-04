@@ -1,83 +1,62 @@
-package com.example.demo.model; 
+package com.example.demo.model;
 
-import java.math.BigDecimal; 
-import java.util.Objects; 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
 
-@Entity
-@Table(name = "item_carrito")
+// NO usar @Entity, @Table, etc. - NO es una entidad JPA
 public class ItemCarrito {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idLibro;
-    private String nombre;
+    private Long idLibro;  // Long, igual que en Libro
+    private String titulo;
     private BigDecimal precio;
     private Integer cantidad;
-    private BigDecimal subtotal;
-    public ItemCarrito() {
+    
+    // Constructor con Long
+    public ItemCarrito(Long idLibro, String titulo, BigDecimal precio, Integer cantidad) {
+        this.idLibro = idLibro;
+        this.titulo = titulo;
+        this.precio = precio;
+        this.cantidad = cantidad;
     }
-
-   public ItemCarrito(Long idLibro, String nombre, BigDecimal precio, Integer cantidad) { 
-    this.idLibro = idLibro;
-    this.nombre = nombre;
-    this.precio = precio;
-    this.cantidad = cantidad;
-    this.subtotal = precio.multiply(BigDecimal.valueOf(cantidad));
-}
-
-
+    
+    // Constructor vacío
+    public ItemCarrito() {}
+    
+    // Getters y Setters
     public Long getIdLibro() {
         return idLibro;
     }
-
+    
     public void setIdLibro(Long idLibro) {
         this.idLibro = idLibro;
     }
-
-    public String getNombre() {
-        return nombre;
+    
+    public String getTitulo() {
+        return titulo;
     }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
-
+    
     public BigDecimal getPrecio() {
         return precio;
     }
-
+    
     public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
-
+    
     public Integer getCantidad() {
         return cantidad;
     }
-
+    
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
-        if (this.precio != null && cantidad != null) {
-            this.subtotal = this.precio.multiply(BigDecimal.valueOf(cantidad));
-        } else {
-            this.subtotal = BigDecimal.ZERO;
-        }
-    }
-
-
-    public BigDecimal getSubtotal() {
-        return subtotal;
     }
     
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemCarrito that = (ItemCarrito) o;
-        return Objects.equals(idLibro, that.idLibro);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idLibro);
+    public BigDecimal getSubtotal() {
+        if (precio != null && cantidad != null) {
+            return precio.multiply(BigDecimal.valueOf(cantidad));
+        }
+        return BigDecimal.ZERO;
     }
 }

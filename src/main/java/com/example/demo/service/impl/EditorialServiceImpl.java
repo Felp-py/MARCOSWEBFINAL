@@ -21,7 +21,7 @@ public class EditorialServiceImpl implements EditorialService {
     }
 
     @Override
-    public Optional<Editorial> findById(Integer id) {
+    public Optional<Editorial> findById(Integer id) { // Mantener como Integer
         return editorialRepository.findById(id);
     }
 
@@ -31,7 +31,13 @@ public class EditorialServiceImpl implements EditorialService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Integer id) { // Mantener como Integer
         editorialRepository.deleteById(id);
+    }
+    
+    // Método adicional para buscar por nombre
+    @Override
+    public Optional<Editorial> findByNombre(String nombre) {
+        return editorialRepository.findByNombre(nombre);
     }
 }

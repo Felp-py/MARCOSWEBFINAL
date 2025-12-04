@@ -22,29 +22,17 @@ public class SecurityConfig {
             System.out.println("🟡 === INTENTO DE LOGIN ===");
             System.out.println("Usuario ingresado: '" + username + "'");
             
-            // Listar TODOS los usuarios para debugging
             var todos = usuarioRepository.findAll();
             System.out.println("Total usuarios en BD: " + todos.size());
             
-            // Buscar por nombre EXACTO (case-sensitive)
             Optional<com.example.demo.model.Usuario> usuarioOpt = todos.stream()
-                .filter(u -> {
-                    boolean match = u.getNombre().equals(username);
-                    if (match) {
-                        System.out.println("✅ Encontrado por nombre exacto: " + u.getNombre());
-                    }
-                    return match;
-                })
+                .filter(u -> u.getNombre().equals(username))
                 .findFirst();
             
-            // Si no encuentra, buscar ignorando mayúsculas
             if (usuarioOpt.isEmpty()) {
                 usuarioOpt = todos.stream()
                     .filter(u -> u.getNombre().equalsIgnoreCase(username))
                     .findFirst();
-                if (usuarioOpt.isPresent()) {
-                    System.out.println("⚠️  Encontrado ignorando mayúsculas: " + usuarioOpt.get().getNombre());
-                }
             }
             
             if (usuarioOpt.isEmpty()) {
@@ -61,7 +49,6 @@ public class SecurityConfig {
             
             System.out.println("🔑 Autenticando: " + usuario.getNombre());
             System.out.println("   Rol asignado: " + rol);
-            System.out.println("   Password (hash): " + usuario.getPassword());
             
             return org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getNombre())
@@ -83,7 +70,7 @@ public class SecurityConfig {
                 // Rutas PÚBLICAS
                 .requestMatchers(
                     "/", "/inicio", "/catalogo", "/nosotros", "/compras",
-                    "/login", "/registro", "/error",
+                    "/login", "/registro", "/error",  // Solo /login, no /auth/login
                     "/css/**", "/js/**", "/img/**", "/webjars/**"
                 ).permitAll()
                 // Rutas ADMIN
@@ -92,15 +79,15 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
+                .loginPage("/login")          // Solo /login
+                .loginProcessingUrl("/login") // Solo /login
                 .defaultSuccessUrl("/inicio", true)
-                .failureUrl("/login?error=true")
+                .failureUrl("/login?error=true") // Solo /login
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
+                .logoutSuccessUrl("/login?logout=true") // Solo /login
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()

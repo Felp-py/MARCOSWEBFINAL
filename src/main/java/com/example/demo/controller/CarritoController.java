@@ -38,7 +38,7 @@ public class CarritoController {
     }
 
     @PostMapping("/agregar")
-    public String agregarAlCarrito(@RequestParam Long idLibro,
+    public String agregarAlCarrito(@RequestParam Long idLibro,  // Cambiado a Long
                                    @RequestParam(defaultValue = "1") int cantidad,
                                    @ModelAttribute("carrito") List<ItemCarrito> carrito) {
 
@@ -58,7 +58,7 @@ public class CarritoController {
 
             if (!existe) {
                 ItemCarrito nuevoItem = new ItemCarrito(
-                        libro.getIdLibro(),
+                        libro.getIdLibro(),  // Long
                         libro.getTitulo(),
                         libro.getPrecio(),
                         cantidad
@@ -71,7 +71,7 @@ public class CarritoController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String eliminarItem(@PathVariable Long id,
+    public String eliminarItem(@PathVariable Long id,  // Cambiado a Long
                                @ModelAttribute("carrito") List<ItemCarrito> carrito) {
         carrito.removeIf(item -> item.getIdLibro().equals(id));
         return "redirect:/carrito";
