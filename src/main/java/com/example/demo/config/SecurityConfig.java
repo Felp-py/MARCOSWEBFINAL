@@ -10,67 +10,39 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    
     @Bean
     public UserDetailsService userDetailsService(UsuarioRepository usuarioRepository) {
         return username -> {
-            System.out.println("🟡 === INTENTO DE LOGIN ===");
-            System.out.println("Usuario ingresado: '" + username + "'");
+            System.out.println("🔍 Intentando autenticar: " + username);
             
-            // Listar TODOS los usuarios para debugging
-            var todos = usuarioRepository.findAll();
-            System.out.println("Total usuarios en BD: " + todos.size());
-            
-            // Buscar por nombre EXACTO (case-sensitive)
-            Optional<com.example.demo.model.Usuario> usuarioOpt = todos.stream()
-                .filter(u -> {
-                    boolean match = u.getNombre().equals(username);
-                    if (match) {
-                        System.out.println("✅ Encontrado por nombre exacto: " + u.getNombre());
-                    }
-                    return match;
-                })
-                .findFirst();
-            
-            // Si no encuentra, buscar ignorando mayúsculas
-            if (usuarioOpt.isEmpty()) {
-                usuarioOpt = todos.stream()
-                    .filter(u -> u.getNombre().equalsIgnoreCase(username))
-                    .findFirst();
-                if (usuarioOpt.isPresent()) {
-                    System.out.println("⚠️  Encontrado ignorando mayúsculas: " + usuarioOpt.get().getNombre());
-                }
-            }
-            
-            if (usuarioOpt.isEmpty()) {
-                System.out.println("❌ NO ENCONTRADO. Usuarios disponibles:");
-                todos.forEach(u -> {
-                    System.out.println("   - Nombre: '" + u.getNombre() + 
-                                     "', Email: '" + u.getEmail() + "'");
-                });
-                throw new UsernameNotFoundException("Usuario '" + username + "' no encontrado");
-            }
-            
-            var usuario = usuarioOpt.get();
-            String rol = (usuario.getIdRol() != null && usuario.getIdRol() == 1) ? "ADMIN" : "USER";
-            
-            System.out.println("🔑 Autenticando: " + usuario.getNombre());
-            System.out.println("   Rol asignado: " + rol);
-            System.out.println("   Password (hash): " + usuario.getPassword());
-            
-            return org.springframework.security.core.userdetails.User.builder()
-                .username(usuario.getNombre())
-                .password(usuario.getPassword())
-                .roles(rol)
-                .build();
+            // Buscar por nombre O correo
+            return usuarioRepository.findByNombreOrCorreo(username)
+                    .map(usuario -> {
+                        System.out.println("✅ Usuario encontrado: " + usuario.getNombre());
+                        System.out.println("   Correo: " + usuario.getCorreo());
+                        System.out.println("   ID Rol: " + usuario.getIdRol());
+                        
+                        String rol = (usuario.getIdRol() != null && usuario.getIdRol() == 1) 
+                                   ? "ADMIN" : "USER";
+                        
+                        return org.springframework.security.core.userdetails.User.builder()
+                                .username(usuario.getNombre())
+                                .password(usuario.getContrasena())  // CORRECCIÓN: getContrasena
+                                .roles(rol)
+                                .build();
+                    })
+                    .orElseThrow(() -> {
+                        System.out.println("❌ Usuario no encontrado: " + username);
+                        return new UsernameNotFoundException("Usuario no encontrado");
+                    });
         };
     }
-
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -83,8 +55,9 @@ public class SecurityConfig {
                 // Rutas PÚBLICAS
                 .requestMatchers(
                     "/", "/inicio", "/catalogo", "/nosotros", "/compras",
-                    "/login", "/registro", "/error",
-                    "/css/**", "/js/**", "/img/**", "/webjars/**"
+                    "/login", "/registro/**", "/error",
+                    "/css/**", "/js/**", "/img/**", "/webjars/**",
+                    "/registro/api/**", "/api/consulta/**", "/dni/**", "/api/**"
                 ).permitAll()
                 // Rutas ADMIN
                 .requestMatchers("/libros/**", "/admin/**").hasRole("ADMIN")
@@ -105,7 +78,13 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.disable()) // TEMPORAL - para pruebas
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers(
+                    "/registro/api/**",
+                    "/api/consulta/**",
+                    "/api/**"
+                )
+            )
             .build();
     }
 }

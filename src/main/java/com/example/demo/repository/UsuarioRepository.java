@@ -10,17 +10,17 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     
-    // ELIMINA temporalmente findByNombreUsuario y usa solo estos:
+    // Buscar por correo (columna 'correo' en BD)
+    Optional<Usuario> findByCorreo(String correo);
     
-    // Método 1: Buscar por el campo que realmente existe
-    @Query("SELECT u FROM Usuario u WHERE u.nombre = :nombre")
-    Optional<Usuario> findByNombre(@Param("nombre") String nombre);
+    // Buscar por nombre (columna 'nombre' en BD)
+    Optional<Usuario> findByNombre(String nombre);
     
-    // Método 2: Buscar por email
-    @Query("SELECT u FROM Usuario u WHERE u.email = :email")
-    Optional<Usuario> findByEmail(@Param("email") String email);
+    // Buscar por nombre O correo
+    @Query("SELECT u FROM Usuario u WHERE u.nombre = :busqueda OR u.correo = :busqueda")
+    Optional<Usuario> findByNombreOrCorreo(@Param("busqueda") String busqueda);
     
-    // Método 3: Buscar por nombre O email (útil para login)
-    @Query("SELECT u FROM Usuario u WHERE u.nombre = :texto OR u.email = :texto")
-    Optional<Usuario> findByNombreOrEmail(@Param("texto") String texto);
+    // Verificar si existe
+    boolean existsByNombre(String nombre);
+    boolean existsByCorreo(String correo);
 }

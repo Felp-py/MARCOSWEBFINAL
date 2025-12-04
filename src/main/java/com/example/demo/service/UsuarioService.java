@@ -9,9 +9,9 @@ public interface UsuarioService {
 
     Usuario obtenerPorId(Integer id);
 
-    Usuario obtenerPorEmail(String email);
+    Usuario obtenerPorCorreo(String correo);  // ← Nombre consistente
 
-    Usuario obtenerPorNombreUsuario(String nombreUsuario);
+    Usuario obtenerPorNombre(String nombre);
 
     List<Usuario> listarTodos();
 }

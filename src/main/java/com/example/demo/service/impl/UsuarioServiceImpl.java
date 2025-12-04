@@ -4,7 +4,6 @@ import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.UsuarioService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -27,13 +26,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario obtenerPorEmail(String email) {
-        return repo.findByEmail(email).orElse(null);
+    public Usuario obtenerPorCorreo(String correo) {  // ← Corregido: usar parámetro 'correo'
+        return repo.findByCorreo(correo).orElse(null);  // ← Corregido: pasar 'correo'
     }
 
     @Override
-    public Usuario obtenerPorNombreUsuario(String nombreUsuario) {
-        return repo.findByNombre(nombreUsuario).orElse(null);
+    public Usuario obtenerPorNombre(String nombre) {
+        return repo.findByNombre(nombre).orElse(null);
     }
 
     @Override
